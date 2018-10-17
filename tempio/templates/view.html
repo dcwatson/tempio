@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block header %}/{{ file.name }}{% if not file.public %} (PRIVATE){% endif %}<a class="download" href="{{ file.get_download_url }}?file"><img src="{% static 'download.svg' %}" width="25" alt="Download " /></a>{% endblock header %}
+
+{% block content %}
+    {{ file.render }}
+{% endblock content %}
+
+{% block sidebar %}
+    <label class="heading" for="id_name">Name</label>
+    <input type="text" id="id_name" name="name" value="{{ file.name }}" />
+    <label class="heading" for="id_tags">Tags</label>
+    <input type="text" id="id_tags" name="tags" value="{{ file.tag_text }}" />
+    <label class="heading" for="id_expires">Expires</label>
+    <input type="text" id="id_expires" name="expires" />
+    <label class="heading" for="id_description">Description</label>
+    <textarea id="id_description" name="description">{{ file.description }}</textarea>
+    <label class="heading">Options</label>
+    <div class="options">
+        <label class="checkbox">
+            <input type="checkbox" name="public" value="1"{% if file.public %} checked="checked"{% endif %} />
+            This file is public
+        </label>
+    </div>
+    <label class="heading" for="id_properties">Properties</label>
+    <table>
+        {% for name, value in file.properties.items %}
+            <tr>
+                <td>{{ name }}</td>
+                <td>{{ value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    {% if file.owner == user %}
+        <button type="submit" class="primary">Update</button>
+        <button type="submit" name="delete" class="delete">Delete</button>
+    {% endif %}
+{% endblock sidebar %}
+
+{% block javascript %}
+    <script>
+    </script>
+{% endblock %}
