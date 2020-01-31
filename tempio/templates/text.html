@@ -1,1 +1,1 @@
-<textarea name="content" autofocus>{{ file.text }}</textarea>
+<textarea name="content" autofocus{% if not editable %} disabled{% endif %}>{{ file.text }}</textarea>

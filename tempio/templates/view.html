@@ -1,30 +1,31 @@
 {% extends "base.html" %}
 
 {% load static %}
+{% load i18n %}
 
-{% block header %}/{{ file.name }}{% if not file.public %} (PRIVATE){% endif %}<a class="download" href="{{ file.get_download_url }}?file"><img src="{% static 'download.svg' %}" width="25" alt="Download " /></a>{% endblock header %}
+{% block header %}/{{ file.name }}{% if not file.public %} ({% trans "PRIVATE" %}){% endif %}<a class="download" href="{{ file.get_download_url }}?file"><img src="{% static 'download.svg' %}" width="25" alt="{% trans 'Download' %}" /></a>{% endblock header %}
 
 {% block content %}
     {{ file.render }}
 {% endblock content %}
 
 {% block sidebar %}
-    <label class="heading" for="id_name">Name</label>
-    <input type="text" id="id_name" name="name" value="{{ file.name }}" />
-    <label class="heading" for="id_tags">Tags</label>
-    <input type="text" id="id_tags" name="tags" value="{{ file.tag_text }}" />
-    <label class="heading" for="id_expires">Expires</label>
-    <input type="text" id="id_expires" name="expires" />
-    <label class="heading" for="id_description">Description</label>
-    <textarea id="id_description" name="description">{{ file.description }}</textarea>
-    <label class="heading">Options</label>
+    <label class="heading" for="id_name">{% trans "Name" %}</label>
+    <input type="text" id="id_name" name="name" value="{{ file.name }}"{% if not editable %} disabled{% endif %} />
+    <label class="heading" for="id_tags">{% trans "Tags" %}</label>
+    <input type="text" id="id_tags" name="tags" value="{{ file.tag_text }}"{% if not editable %} disabled{% endif %} />
+    <label class="heading" for="id_expires">{% trans "Expires" %}</label>
+    <input type="text" id="id_expires" name="expires"{% if not editable %} disabled{% endif %} />
+    <label class="heading" for="id_description">{% trans "Description" %}</label>
+    <textarea id="id_description" name="description"{% if not editable %} disabled{% endif %}>{{ file.description }}</textarea>
+    <label class="heading">{% trans "Options" %}</label>
     <div class="options">
         <label class="checkbox">
-            <input type="checkbox" name="public" value="1"{% if file.public %} checked="checked"{% endif %} />
-            This file is public
+            <input type="checkbox" name="public" value="1"{% if file.public %} checked="checked"{% endif %}{% if not editable %} disabled{% endif %} />
+            {% trans "This file is public" %}
         </label>
     </div>
-    <label class="heading" for="id_properties">Properties</label>
+    <label class="heading" for="id_properties">{% trans "Properties" %}</label>
     <table>
         {% for name, value in file.properties.items %}
             <tr>
@@ -33,13 +34,10 @@
             </tr>
         {% endfor %}
     </table>
-    {% if file.owner == user %}
-        <button type="submit" class="primary">Update</button>
-        <button type="submit" name="delete" class="delete">Delete</button>
+    {% if editable %}
+        <button type="submit" class="primary">{% if file.pk %}{% trans "Update" %}{% else %}{% trans "Save" %}{% endif %}</button>
+        {% if file.pk %}
+            <button type="submit" name="delete" class="delete">{% trans "Delete" %}</button>
+        {% endif %}
     {% endif %}
 {% endblock sidebar %}
-
-{% block javascript %}
-    <script>
-    </script>
-{% endblock %}
