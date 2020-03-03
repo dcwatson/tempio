@@ -1,19 +1,28 @@
 {% extends "base.html" %}
 
+{% load i18n %}
 {% load static %}
 
 {% block javascript %}
     <script src="{% static 'tempio.js' %}"></script>
 {% endblock %}
 
-{% block header %}{% if slug %}/{{ slug }}{% endif %}<a class="download" href="/new/"><img src="{% static 'plus.svg' %}" width="25" alt="New Document" /></a>{% endblock header %}
+{% block header %}{% if slug %}/{{ slug }}{% endif %}
+	<a class="download" href="/new/">
+		<img src="{% static 'plus.svg' %}" width="25" alt="{% trans 'New Document' %}" />
+	</a>
+	<a class="download">
+		<img src="{% static 'upload.svg' %}" width="25" alt="{% trans 'Upload' %}" />
+		<input type="file" name="file" id="upload" />
+	</a>
+{% endblock header %}
 
 {% block content %}
 	{% for f in files %}
 		<a class="file" href="{{ f.get_absolute_url }}">
 			<div class="thumb">
-				{% if f.is_image %}
-					<img src="{{ f.thumbnail_data }}" />
+				{% if f.is_image and f.thumbnail %}
+					<div class="image-center"><img src="{{ f.thumbnail_data }}" /></div>
 				{% else %}
 					{% if f.is_text %}
 						{{ f.text|linebreaksbr }}

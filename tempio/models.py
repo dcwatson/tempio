@@ -58,6 +58,9 @@ class File(models.Model):
     def get_absolute_url(self):
         return "/{}/".format(self.slug)
 
+    def get_view_url(self):
+        return "{}view/".format(self.get_absolute_url())
+
     def get_download_url(self):
         return "{}download/".format(self.get_absolute_url())
 
@@ -104,8 +107,9 @@ class File(models.Model):
             "Size": filesizeformat(len(self.content)),
             "Type": self.content_type,
         }
-        if self.is_image:
+        if self.width:
             props["Width"] = self.width
+        if self.height:
             props["Height"] = self.height
             # import exifread
             # tags = exifread.process_file(io.BytesIO(self.content), details=False)

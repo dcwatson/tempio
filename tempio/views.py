@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 
 from .models import File, Tag
 
@@ -42,19 +42,24 @@ def upload(request):
     thumbnail = None
     width = None
     height = None
+    expires = timezone.now() + datetime.timedelta(days=settings.TEMPIO_DEFAULT_EXPIRATION)
     if upload.content_type.startswith("image/"):
-        thumb = io.BytesIO()
-        im = Image.open(io.BytesIO(content))
-        width, height = im.size
-        im.thumbnail((100, 100))
-        im.save(thumb, "PNG")
-        thumbnail = thumb.getvalue()
+        try:
+            im = Image.open(io.BytesIO(content))
+            thumb = io.BytesIO()
+            width, height = im.size
+            im.thumbnail((200, 200))  # TODO: make this configurable
+            im.save(thumb, "PNG")
+            thumbnail = thumb.getvalue()
+        except UnidentifiedImageError:
+            pass
     f = File.objects.create(
         name=upload.name,
         content_type=upload.content_type,
         content=content,
         thumbnail=thumbnail,
         owner=request.user,
+        date_expires=expires,
         width=width,
         height=height,
     )
@@ -90,9 +95,9 @@ def view(request, file_id):
     return render(request, "view.html", {"file": f, "editable": editable})
 
 
-def download(request, file_id):
+def download(request, file_id, as_attachment=False):
     f = get_object_or_404(File, slug=file_id)
-    if "file" in request.GET:
+    if as_attachment:
         return FileResponse(io.BytesIO(f.content), as_attachment=True, filename=f.name, content_type=f.content_type)
     else:
         return HttpResponse(f.content, content_type=f.content_type)

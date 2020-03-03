@@ -40,19 +40,31 @@ function uploadFiles(files) {
     return chain;
 }
 
-$("html").on({
-    dragover: function(e) {
-        $(this).addClass("hover");
-        return false;
-    },
-    "dragend dragleave": function(e) {
-        $(this).removeClass("hover");
-        return false;
-    },
-    drop: function(e) {
-        e.preventDefault();
-        $(this).removeClass("hover");
-        uploadFiles(e.originalEvent.dataTransfer.files);
-        return false;
-    }
+$(function() {
+    $("#upload").change(function(e) {
+        uploadFiles(this.files);
+    });
+
+    $("html").on({
+        dragover: function(e) {
+            $(this).addClass("hover");
+            return false;
+        },
+        dragleave: function(e) {
+            if (e.originalEvent.pageX == 0 && e.originalEvent.pageY == 0) {
+                $(this).removeClass("hover");
+            }
+            return false;
+        },
+        dragend: function(e) {
+            $(this).removeClass("hover");
+            return false;
+        },
+        drop: function(e) {
+            e.preventDefault();
+            $(this).removeClass("hover");
+            uploadFiles(e.originalEvent.dataTransfer.files);
+            return false;
+        }
+    });
 });

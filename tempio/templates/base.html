@@ -7,13 +7,13 @@
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>{% block title %}temp.io{% endblock %}</title>
+        <title>{% block title %}{{ site_name }}{% endblock %}</title>
         <link rel="stylesheet" href="{% static 'tempio.css' %}" />
         {% block css %}{% endblock css %}
     </head>
     <body>
         <div id="header">
-            <a href="/">/temp</a>{% block header %}{% endblock header %}
+            <a href="/">/{{ site_name }}</a>{% block header %}{% endblock header %}
         </div>
         <form action="" method="post">
             {% csrf_token %}
@@ -24,6 +24,7 @@
                 {% block sidebar %}{% endblock sidebar %}
             </div>
         </form>
+        <div id="fade">{% trans "Drop to upload" %}</div>
         <script src="{% static 'jquery-3.3.1.min.js' %}"></script>
         {% block javascript %}{% endblock javascript %}
     </body>

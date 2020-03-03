@@ -3,7 +3,9 @@
 {% load static %}
 {% load i18n %}
 
-{% block header %}/{{ file.name }}{% if not file.public %} ({% trans "PRIVATE" %}){% endif %}<a class="download" href="{{ file.get_download_url }}?file"><img src="{% static 'download.svg' %}" width="25" alt="{% trans 'Download' %}" /></a>{% endblock header %}
+{% block title %}{{ site_name }} / {{ file.name }}{% endblock %}
+
+{% block header %}/{{ file.name }}{% if not file.public %} ({% trans "PRIVATE" %}){% endif %}{% if file.pk %}<a class="download" href="{{ file.get_download_url }}"><img src="{% static 'download.svg' %}" width="25" alt="{% trans 'Download' %}" /></a>{% endif %}{% endblock header %}
 
 {% block content %}
     {% include file.template %}
@@ -26,7 +28,7 @@
         </label>
     </div>
     <label class="heading" for="id_properties">{% trans "Properties" %}</label>
-    <table>
+    <table class="properties">
         {% for name, value in file.properties.items %}
             <tr>
                 <td>{{ name }}</td>

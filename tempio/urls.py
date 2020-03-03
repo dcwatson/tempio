@@ -9,5 +9,6 @@ urlpatterns = [
     path("tag/<slug>/", views.index),
     path("admin/", admin.site.urls),
     path("<file_id>/", views.view),
-    path("<file_id>/download/", views.download),
+    path("<file_id>/view/", views.download),
+    path("<file_id>/download/", views.download, {"as_attachment": True}),
 ]
