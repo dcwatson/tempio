@@ -4,7 +4,6 @@ import os
 from django.conf import settings
 from django.db import models
 from django.db.models import Count
-from django.template import loader
 from django.template.defaultfilters import filesizeformat
 from django.utils import timezone
 from django.utils.crypto import get_random_string
@@ -21,6 +20,10 @@ def random_key():
 
 class Tag(models.Model):
     slug = models.SlugField()
+
+    @classmethod
+    def cleanup(cls):
+        cls.objects.annotate(count=Count("files")).filter(count=0).delete()
 
     def __str__(self):
         return self.slug
@@ -45,6 +48,10 @@ class File(models.Model):
     height = models.IntegerField(null=True, blank=True)
     public = models.BooleanField(default=True)
 
+    @classmethod
+    def cleanup(cls):
+        cls.objects.filter(date_expires__lt=timezone.now()).delete()
+
     def __str__(self):
         return self.name
 
@@ -68,6 +75,15 @@ class File(models.Model):
         return ext[1:]
 
     @property
+    def template(self):
+        if self.is_image:
+            return "image.html"
+        elif self.is_text:
+            return "text.html"
+        else:
+            return "file.html"
+
+    @property
     def tag_text(self):
         return " ".join(t.slug for t in self.tags.order_by("slug")) if self.pk else ""
 
@@ -81,17 +97,10 @@ class File(models.Model):
             else ""
         )
 
-    def render(self):
-        template = "file.html"
-        if self.is_image:
-            template = "image.html"
-        elif self.is_text:
-            template = "text.html"
-        return loader.render_to_string(template, {"file": self})
-
     def properties(self):
         props = {
             "Created": self.date_created,
+            "Expires": self.date_expires or "Never",
             "Size": filesizeformat(len(self.content)),
             "Type": self.content_type,
         }

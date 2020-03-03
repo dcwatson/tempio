@@ -106,6 +106,7 @@ body {
 }
 
 #sidebar input[type="text"],
+#sidebar input[type="date"],
 #sidebar textarea {
     display: block;
     width: 100%;

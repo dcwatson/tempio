@@ -6,7 +6,7 @@
 {% block header %}/{{ file.name }}{% if not file.public %} ({% trans "PRIVATE" %}){% endif %}<a class="download" href="{{ file.get_download_url }}?file"><img src="{% static 'download.svg' %}" width="25" alt="{% trans 'Download' %}" /></a>{% endblock header %}
 
 {% block content %}
-    {{ file.render }}
+    {% include file.template %}
 {% endblock content %}
 
 {% block sidebar %}
@@ -15,7 +15,7 @@
     <label class="heading" for="id_tags">{% trans "Tags" %}</label>
     <input type="text" id="id_tags" name="tags" value="{{ file.tag_text }}"{% if not editable %} disabled{% endif %} />
     <label class="heading" for="id_expires">{% trans "Expires" %}</label>
-    <input type="text" id="id_expires" name="expires"{% if not editable %} disabled{% endif %} />
+    <input type="date" id="id_expires" placeholder="yyyy-mm-dd" name="expires" value="{{ file.date_expires.date.isoformat }}"{% if not editable %} disabled{% endif %} />
     <label class="heading" for="id_description">{% trans "Description" %}</label>
     <textarea id="id_description" name="description"{% if not editable %} disabled{% endif %}>{{ file.description }}</textarea>
     <label class="heading">{% trans "Options" %}</label>

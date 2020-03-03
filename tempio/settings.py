@@ -55,6 +55,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "tempio.utils.context_processor",
             ],
         },
     },
@@ -75,6 +76,8 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = os.getenv("STATIC_ROOT", os.path.join(BASE_DIR, "static"))
 
+TEMPIO_SITE_NAME = os.getenv("TEMPIO_SITE_NAME", "temp")
 TEMPIO_COOKIE_NAME = os.getenv("TEMPIO_COOKIE_NAME", "tempio_user")
 TEMPIO_COOKIE_EXPIRATION = int(os.getenv("TEMPIO_COOKIE_EXPIRATION", 365))  # in days
 TEMPIO_MAX_SIZE = int(os.getenv("TEMPIO_MAX_SIZE", 1024 * 1024 * 5))  # 5 MB
+TEMPIO_DEFAULT_EXPIRATION = int(os.getenv("TEMPIO_DEFAULT_EXPIRATION", 1))  # in days
