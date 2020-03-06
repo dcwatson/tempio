@@ -21,15 +21,8 @@ def index(request, slug=None):
         files = files.filter(Q(public=True) | Q(owner=request.user))
     if slug:
         files = files.filter(tags__slug=slug)
-    return render(
-        request,
-        "index.html",
-        {
-            "files": files[:50],
-            "tags": Tag.objects.annotate(num_files=Count("files")).order_by("-num_files"),
-            "slug": slug,
-        },
-    )
+    tags = Tag.objects.filter(files__in=files).annotate(num_files=Count("files")).order_by("-num_files")
+    return render(request, "index.html", {"files": files[:50], "tags": tags, "slug": slug})
 
 
 @csrf_exempt

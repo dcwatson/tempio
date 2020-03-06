@@ -1,7 +1,9 @@
 import base64
+import datetime
 import os
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Count
 from django.template.defaultfilters import filesizeformat
@@ -31,6 +33,9 @@ class Tag(models.Model):
     def get_absolute_url(self):
         return "/tag/{}/".format(self.slug)
 
+    def get_api_url(self):
+        return "/api/files/{}/".format(self.slug)
+
 
 class File(models.Model):
     slug = models.SlugField(unique=True, default=random_key)
@@ -51,6 +56,10 @@ class File(models.Model):
     @classmethod
     def cleanup(cls):
         cls.objects.filter(date_expires__lt=timezone.now()).delete()
+        # Remove transient users periodically.
+        User = get_user_model()
+        cutoff = timezone.now() - datetime.timedelta(days=settings.TEMPIO_USER_EXPIRATION)
+        User.objects.annotate(num_files=Count("files")).filter(date_joined__lt=cutoff, num_files=0).delete()
 
     def __str__(self):
         return self.name
